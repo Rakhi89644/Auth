@@ -5,7 +5,7 @@ from fastapi import Depends, FastAPI,HTTPException,status
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from typing import List
-#from fastapi_jwt_auth import AuthJWT
+from fastapi_jwt_auth import AuthJWT
 from pydantic.networks import url_regex
 
 app=FastAPI()
@@ -13,7 +13,7 @@ app=FastAPI()
 class Settings(BaseModel):
     authjwt_secret_key:str = '5fd6ba2ca1b5f697c15e2ec835f9236f7286bf6268a05088be4eec592d284ba6'
 
-@AuthJWT.load.config
+@AuthJWT.load.Config
 def get_config():
     return Settings()
 
@@ -50,7 +50,7 @@ users=[]
 @app.get('/')
 def index():
     return{"hello":"Rakhi"}
-
+#creating user
 @app.post('/signup',status_code=201)
 def create_user(user:User):
     new_user={
@@ -61,16 +61,16 @@ def create_user(user:User):
 
     #users.append(new_user)
     return new_user
-
+#getting all user
 @app.get('/users',response_model=List[User])
-def users():
+def get_users():
     return users
 
 @app.post('/login')
 def login(user:UserLogin,Authorize:AuthJWT=Depends()):
     for u in users:
         if (u["username"]==user.username) and (u["password"]==user.password):
-            return {"access_token":access_token}
+            return url_regex
 
         raise HTTPException(status_code='401',detail="Invalid username and password")
 
